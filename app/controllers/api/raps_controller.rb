@@ -10,7 +10,8 @@ class Api::RapsController < ApplicationController
         case event['message']['type']
         when Line::Bot::Event::MessageType::Text
           t = event.message['text']
-          script = t + SCRIPTS.sample
+
+          txt = ''
 
           noun = ''
           nm = Natto::MeCab.new
@@ -33,25 +34,33 @@ class Api::RapsController < ApplicationController
             words = %w( アップデート チョコレート chocolate オンパレード デート グレート ノミネート レート トルネード パレード スケート sk8 スケート テンプレート X PLATE グレネード それでも グレード ステレオ バリケード コーディネート ベイブレード ディベート STAIREO Stereo CD トレード けれど アンケート ゲート)
           end
 
-          txt = ''
-          rhymer = Rhymer::Parser.new(script)
-          nouns = rhymer.lyric.lyric.select {|l| l.feature.match('名詞')}.map(&:surface)
+          SCRIPTS.shuffle.each do |s|
+            script = t + s
 
-          100.times do
-            break if rhymer.rhymes.present?
-            script.sub!(nouns.sample, words.sample)
             rhymer = Rhymer::Parser.new(script)
+            nouns = rhymer.lyric.lyric.select {|l| l.feature.match('名詞')}.map(&:surface)
+
+            words.each do |w|
+              break if rhymer.rhymes.present?
+              script.sub!(nouns.sample, w)
+              puts script
+              rhymer = Rhymer::Parser.new(script)
+            end
+
+            next if rhymer.rhymes.blank?
+            rhymer.rhymes.each do |rhyme|
+              txt = [rhyme[0], rhyme[1]].join(" ")
+            end
+            break if txt
           end
 
-          rhymer.rhymes.each do |rhyme|
-            txt = [rhyme[0], rhyme[1]].join(" ")
+          if Rails.env.production?
+            msg = { type: 'text', text: txt }
+            result = line_client.reply_message(@reply_token, msg)
+            print_line_post_result(result)
+          else
+            puts txt
           end
-
-          puts txt
-
-          #msg = { type: 'text', text: txt }
-          #result = line_client.reply_message(@reply_token, msg)
-          #print_line_post_result(result)
         end
       end
     end
