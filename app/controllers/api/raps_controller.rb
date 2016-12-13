@@ -4,6 +4,17 @@ class Api::RapsController < ApplicationController
   before_action :parse_event_params
 
   def battle
+    @events.each do |event|
+      case event
+      when Line::Bot::Event::Message
+        case event['message']['type']
+        when Line::Bot::Event::MessageType::Text
+          msg = { type: 'text', text: event.message['text'] }
+          result = line_client.reply_message(@reply_token, msg)
+          print_line_post_result(result)
+        end
+      end
+    end
     render json: {}, status: :ok
   end
 
@@ -21,7 +32,7 @@ class Api::RapsController < ApplicationController
 
     signature = request.env['HTTP_X_LINE_SIGNATURE']
     if Rails.env.production? && !line_client.validate_signature(body, signature)
-      raise text: 'Bad Request'
+      raise 'Bad Request'
     end
 
     line_client.parse_events_from(body)
@@ -31,5 +42,16 @@ class Api::RapsController < ApplicationController
     @events = get_events_from_request
     @reply_token  = @events[0]['replyToken']
     logger.debug "evnets: " + @events.inspect
+  end
+
+  def print_line_post_result(result)
+    case result
+    when Net::HTTPSuccess, Net::HTTPRedirection
+      logger.info "LINE POST: OK"
+    else
+      logger.error "\n\nLINE POST: NG ///////////////////////"
+      logger.error result.body
+      logger.error "/////////////////////////////////////\n\n"
+    end
   end
 end
