@@ -9,7 +9,13 @@ class Api::RapsController < ApplicationController
       when Line::Bot::Event::Message
         case event['message']['type']
         when Line::Bot::Event::MessageType::Text
-          msg = { type: 'text', text: event.message['text'] }
+          txt = ''
+          rhymer = Rhymer::Parser.new(event.message['text'])
+          rhymer.rhymes.each do |rhyme|
+            txt = [rhyme[0], rhyme[1]].join(" ")
+          end
+
+          msg = { type: 'text', text: txt }
           result = line_client.reply_message(@reply_token, msg)
           print_line_post_result(result)
         end
