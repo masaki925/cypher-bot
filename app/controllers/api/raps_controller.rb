@@ -9,15 +9,49 @@ class Api::RapsController < ApplicationController
       when Line::Bot::Event::Message
         case event['message']['type']
         when Line::Bot::Event::MessageType::Text
+          t = event.message['text']
+          script = t + SCRIPTS.sample
+
+          noun = ''
+          nm = Natto::MeCab.new
+          nm.parse(t) do |_t|
+            noun = _t.surface if _t.feature.match('名詞')
+          end
+
+          url = URI.parse('http://kujirahand.com/web-tools/Words.php')
+          res = Net::HTTP.start(url.host, url.port) {|http|
+            http.get('/web-tools/Words.php?m=boin-search&key=' + URI.escape(noun) + '&opt=usiro&len=%3F')
+          }
+          doc = Nokogiri::HTML.parse(res.body)
+
+          words = []
+          li_elems = doc.xpath('//ul[@id="word_result"]/li')
+          li_elems.each do |li_elem|
+            words << li_elem.at('ruby').children[0].text if li_elem.at('ruby')
+          end
+          if words.empty?
+            words = %w( アップデート チョコレート chocolate オンパレード デート グレート ノミネート レート トルネード パレード スケート sk8 スケート テンプレート X PLATE グレネード それでも グレード ステレオ バリケード コーディネート ベイブレード ディベート STAIREO Stereo CD トレード けれど アンケート ゲート)
+          end
+
           txt = ''
-          rhymer = Rhymer::Parser.new(event.message['text'])
+          rhymer = Rhymer::Parser.new(script)
+          nouns = rhymer.lyric.lyric.select {|l| l.feature.match('名詞')}.map(&:surface)
+
+          100.times do
+            break if rhymer.rhymes.present?
+            script.sub!(nouns.sample, words.sample)
+            rhymer = Rhymer::Parser.new(script)
+          end
+
           rhymer.rhymes.each do |rhyme|
             txt = [rhyme[0], rhyme[1]].join(" ")
           end
 
-          msg = { type: 'text', text: txt }
-          result = line_client.reply_message(@reply_token, msg)
-          print_line_post_result(result)
+          puts txt
+
+          #msg = { type: 'text', text: txt }
+          #result = line_client.reply_message(@reply_token, msg)
+          #print_line_post_result(result)
         end
       end
     end

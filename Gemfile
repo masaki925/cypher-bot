@@ -43,4 +43,5 @@ gem 'figaro'
 # LINE Messaging API
 gem 'line-bot-api'
 
+gem 'natto'
 gem 'rhymer', git: 'https://github.com/suzuki86/rhymer.git'

@@ -172,6 +172,7 @@ DEPENDENCIES
   jquery-rails
   line-bot-api
   listen (~> 3.0.5)
+  natto
   pg (~> 0.18)
   pry-byebug
   pry-rails
