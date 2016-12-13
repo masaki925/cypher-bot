@@ -88,6 +88,7 @@ class Api::RapsController < ApplicationController
     nm.parse(user_text) do |_t|
       noun = _t.surface if _t.feature.match('名詞')
     end
+    noun = user_text if noun.blank?
 
     words = get_stamp_words(noun)
 
