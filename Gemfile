@@ -42,3 +42,5 @@ gem 'figaro'
 
 # LINE Messaging API
 gem 'line-bot-api'
+
+gem 'mecab', '0.996'
