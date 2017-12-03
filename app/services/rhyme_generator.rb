@@ -40,8 +40,8 @@ class RhymeGenerator
   def get_stamp_words(seed)
     words = []
 
-    url = URI.parse('http://kujirahand.com/web-tools/Words.php')
-    res = Net::HTTP.start(url.host, url.port) {|http|
+    url = URI.parse('https://kujirahand.com/web-tools/Words.php')
+    res = Net::HTTP.start(url.host, url.port, use_ssl: true) {|http|
       http.get('/web-tools/Words.php?m=boin-search&key=' + URI.escape(seed) + '&opt=usiro&len=%3F')
     }
     doc = Nokogiri::HTML.parse(res.body)
