@@ -5,7 +5,6 @@ class RhymeGenerator2
 
   def initialize(user_text, session_id)
     @user_text = user_text
-    @candidates = ["1", "22222", "3333333333"]
     FileUtils.mkdir_p(Rails.root.join('tmp', 'svm_rank', session_id))
     @candidate_score_file = Rails.root.join('tmp', 'svm_rank', session_id, 'candidate_score.dat')
     @rank_score_file      = Rails.root.join('tmp', 'svm_rank', session_id, 'rank_score.dat')
@@ -14,17 +13,13 @@ class RhymeGenerator2
   def get_rhyme
     calc_candidate_scores
     rank_candidates
-    @candidates[top_rank_idx]
+    RHYME_CANDIDATES[top_rank_idx]
   end
 
   private
 
   def vowelize(term)
     "aaeaiaoei"
-  end
-
-  def length_score(cand_text)
-    (@user_text.size - cand_text.size).abs
   end
 
 =begin
@@ -50,8 +45,8 @@ class RhymeGenerator2
   def calc_candidate_scores
     records = []
 
-    @candidates.each_with_index do |cand, idx|
-      records << "#{idx} qid:1 1:#{length_score(cand)}"
+    RHYME_CANDIDATES.each_with_index do |cand, idx|
+      records << "#{idx} qid:1 1:#{RhymeEvaluator.new.length_score(@user_text, cand)}"
     end
 
     open(@candidate_score_file, 'w') do |f|
@@ -66,7 +61,7 @@ class RhymeGenerator2
   end
 
   def top_rank_idx
-    rank_scores = File.readlines(@rank_score_file)
+    rank_scores = File.readlines(@rank_score_file).map {|n| n.to_f}
     rank_scores.rindex(rank_scores.min)
   end
 end
