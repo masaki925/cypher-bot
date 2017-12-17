@@ -1,3 +1,5 @@
+require 'net/https'
+
 class RhymeGenerator
   def initialize(user_text)
     @user_text = user_text
