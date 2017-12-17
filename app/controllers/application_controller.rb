@@ -1,3 +1,4 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery with: :null_session
+  # TODO: session is used for generating svm_rank per request for now
+  # protect_from_forgery with: :null_session
 end
