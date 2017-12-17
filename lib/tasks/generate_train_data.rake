@@ -1,7 +1,6 @@
 desc 'generate train data'
 task :generate_train_data, [:lyrics_path] => :environment do |_t, args|
   file_names = Dir.glob("#{args['lyrics_path']}/*")
-  re = RhymeEvaluator.new
 
   train_data = []
   g_idx = 0
@@ -15,8 +14,9 @@ task :generate_train_data, [:lyrics_path] => :environment do |_t, args|
         break if idx == terms.size - 1
 
         # 正解
-        length_score = re.length_score(terms[idx], terms[idx + 1])
-        train_data.push("1 qid:#{g_idx} 1:#{length_score}")
+        end_rhyme_score = RhymeEvaluator.end_rhyme_score(terms[idx], terms[idx + 1])
+        length_score    = RhymeEvaluator.length_score(terms[idx], terms[idx + 1])
+        train_data.push("1 qid:#{g_idx} 1:#{end_rhyme_score} 2:#{length_score}")
 
         while(1) do
           rand_idx = rand(terms.size)
@@ -24,8 +24,9 @@ task :generate_train_data, [:lyrics_path] => :environment do |_t, args|
         end
 
         # ランダム
-        length_score = re.length_score(terms[idx], terms[rand_idx])
-        train_data.push("2 qid:#{g_idx} 1:#{length_score}")
+        end_rhyme_score = RhymeEvaluator.end_rhyme_score(terms[idx], terms[rand_idx])
+        length_score    = RhymeEvaluator.length_score(terms[idx], terms[rand_idx])
+        train_data.push("2 qid:#{g_idx} 1:#{end_rhyme_score} 2:#{length_score}")
 
         g_idx += 1
       end

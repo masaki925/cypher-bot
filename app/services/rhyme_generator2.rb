@@ -18,35 +18,13 @@ class RhymeGenerator2
 
   private
 
-  def vowelize(term)
-    "aaeaiaoei"
-  end
-
-=begin
-  def end_rhyme_score(cand_text)
-    vowels_user_text = vowelize(@user_text)
-    vowels_cand_text = vowelize(cand_text)
-
-    comp_len = [vowels_user_text.size, vowels_cand_text.size].min
-
-    sub_vowels_user_text = vowels_user_text.split(//).last(comp_len).join
-    sub_vowels_cand_text = vowels_cand_text.split(//).last(comp_len).join
-
-    cnt = 0
-
-    comp_len.times do |n|
-      cnt += 1 if sub_vowels_user_text[n] == sub_vowels_cand_text[n]
-    end
-
-    cnt
-  end
-=end
-
   def calc_candidate_scores
     records = []
 
     RHYME_CANDIDATES.each_with_index do |cand, idx|
-      records << "#{idx} qid:1 1:#{RhymeEvaluator.new.length_score(@user_text, cand)}"
+      end_rhyme_score = RhymeEvaluator.end_rhyme_score(@user_text, cand)
+      length_score    = RhymeEvaluator.length_score(@user_text, cand)
+      records << "#{idx} qid:1 1:#{end_rhyme_score} 2:#{length_score}"
     end
 
     open(@candidate_score_file, 'w') do |f|
