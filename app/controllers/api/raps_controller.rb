@@ -9,7 +9,8 @@ class Api::RapsController < ApplicationController
       when Line::Bot::Event::Message
         case event['message']['type']
         when Line::Bot::Event::MessageType::Text
-          rg = RhymeGenerator.new(event.message['text'])
+          #rg = RhymeGenerator.new(event.message['text'])
+          rg = RhymeGenerator2.new(event.message['text'])
           rhyme = rg.get_rhyme
           if Rails.env.production?
             msg = { type: 'text', text: rhyme }
