@@ -17,7 +17,7 @@ task :generate_rhyme_candidates, [:lyrics_path] => :environment do |_t, args|
   open(out_file, 'w') do |out_f|
     out_f.puts('RHYME_CANDIDATES = [')
     all_terms.shuffle.each do |term|
-      out_f.puts("'" + term + "',")
+      out_f.puts('"' + term + '",')
     end
     out_f.puts(']')
   end
