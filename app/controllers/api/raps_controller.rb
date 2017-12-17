@@ -35,7 +35,7 @@ class Api::RapsController < ApplicationController
           rhyme = rg.get_rhyme
           if Rails.env.production?
             msg = { type: 'text', text: rhyme }
-            result = line_client.reply_message(@reply_token, msg)
+            result = line_client(pee: true).reply_message(@reply_token, msg)
             print_line_post_result(result)
           else
             puts rhyme
@@ -48,10 +48,15 @@ class Api::RapsController < ApplicationController
 
   private
 
-  def line_client
+  def line_client(pee: nil)
     @line_client ||= Line::Bot::Client.new do |config|
-      config.channel_secret = ENV['LINE_CHANNEL_SECRET']
-      config.channel_token = ENV['LINE_CHANNEL_TOKEN']
+      if pee
+        config.channel_secret = ENV['LINE_CHANNEL_SECRET_PEE']
+        config.channel_token = ENV['LINE_CHANNEL_TOKEN_PEE']
+      else
+        config.channel_secret = ENV['LINE_CHANNEL_SECRET']
+        config.channel_token = ENV['LINE_CHANNEL_TOKEN']
+      end
     end
   end
 
