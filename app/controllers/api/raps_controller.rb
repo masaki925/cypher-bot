@@ -46,6 +46,28 @@ class Api::RapsController < ApplicationController
     render json: {}, status: :ok
   end
 
+  def battle_with_marco
+    @events.each do |event|
+      case event
+      when Line::Bot::Event::Message
+        case event['message']['type']
+        when Line::Bot::Event::MessageType::Text
+          session[:loaded] = true
+          rg = RhymeGenerator3.new(event.message['text'])
+          rhyme = rg.get_rhyme
+          if Rails.env.production?
+            msg = { type: 'text', text: rhyme }
+            result = line_client.reply_message(@reply_token, msg)
+            print_line_post_result(result)
+          else
+            puts rhyme
+          end
+        end
+      end
+    end
+    render json: {}, status: :ok
+  end
+
   private
 
   def line_client(pee: nil)
