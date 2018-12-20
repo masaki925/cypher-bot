@@ -17,6 +17,6 @@ class RhymeGenerator3
 
     res = http.request(req)
 
-    res.body
+    res.body.force_encoding('utf-8')
   end
 end
