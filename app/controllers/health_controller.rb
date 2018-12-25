@@ -10,6 +10,6 @@ class HealthController < ApplicationController
     req = Net::HTTP::Get.new uri.request_uri
     http.request req
 
-    head :ok
+    render plain: 'OK'
   end
 end
