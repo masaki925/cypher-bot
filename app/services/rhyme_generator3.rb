@@ -6,7 +6,7 @@ class RhymeGenerator3
   end
 
   def get_rhyme
-    uri = URI.parse("https://salty-chamber-85775.herokuapp.com/rap")
+    uri = URI.parse("https://dj-marco.herokuapp.com/rap")
     http = Net::HTTP.new(uri.host, uri.port)
 
     http.use_ssl = true
