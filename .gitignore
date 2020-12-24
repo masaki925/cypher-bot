@@ -17,6 +17,7 @@
 .byebug_history
 
 *.swp
+.DS_Store
 
 config/application.yml
 
