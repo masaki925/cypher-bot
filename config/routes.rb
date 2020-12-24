@@ -5,5 +5,6 @@ Rails.application.routes.draw do
     post 'raps/battle_with_pee', to: 'raps#battle_with_pee'
     post 'raps/battle_with_marco', to: 'raps#battle_with_marco'
     post 'raps/battle_with_toba', to: 'raps#battle_with_toba'
+    post 'raps/battle_with_dokaben', to: 'raps#battle_with_dokaben'
   end
 end
