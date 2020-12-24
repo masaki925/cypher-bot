@@ -122,6 +122,9 @@ class Api::RapsController < ApplicationController
       elsif params[:action] == 'battle_with_marco'
         config.channel_secret = ENV['LINE_CHANNEL_SECRET_MARCO']
         config.channel_token = ENV['LINE_CHANNEL_TOKEN_MARCO']
+      elsif params[:action] == 'battle_with_dokaben'
+        config.channel_secret = ENV['LINE_CHANNEL_SECRET_DOKABEN']
+        config.channel_token = ENV['LINE_CHANNEL_TOKEN_DOKABEN']
       else
         config.channel_secret = ENV['LINE_CHANNEL_SECRET']
         config.channel_token = ENV['LINE_CHANNEL_TOKEN']
