@@ -90,6 +90,28 @@ class Api::RapsController < ApplicationController
     render json: {}, status: :ok
   end
 
+  def battle_with_dokaben
+    @events.each do |event|
+      case event
+      when Line::Bot::Event::Message
+        case event['message']['type']
+        when Line::Bot::Event::MessageType::Text
+          session[:loaded] = true
+          rg = RhymeGenerator5.new(event.message['text'])
+          rhyme = rg.get_rhyme
+          if Rails.env.production?
+            msg = { type: 'text', text: rhyme }
+            result = line_client.reply_message(@reply_token, msg)
+            print_line_post_result(result)
+          else
+            puts rhyme
+          end
+        end
+      end
+    end
+    render json: {}, status: :ok
+  end
+
   private
 
   def line_client(pee: nil)
@@ -100,6 +122,9 @@ class Api::RapsController < ApplicationController
       elsif params[:action] == 'battle_with_marco'
         config.channel_secret = ENV['LINE_CHANNEL_SECRET_MARCO']
         config.channel_token = ENV['LINE_CHANNEL_TOKEN_MARCO']
+      elsif params[:action] == 'battle_with_dokaben'
+        config.channel_secret = ENV['LINE_CHANNEL_SECRET_DOKABEN']
+        config.channel_token = ENV['LINE_CHANNEL_TOKEN_DOKABEN']
       else
         config.channel_secret = ENV['LINE_CHANNEL_SECRET']
         config.channel_token = ENV['LINE_CHANNEL_TOKEN']
