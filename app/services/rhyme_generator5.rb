@@ -19,7 +19,7 @@ class RhymeGenerator5
 
     res = http.request(req)
     res_json = JSON.parse(res.body.force_encoding('utf-8'))
-    if res_json['code'] == 'INVALID_VERSE' do
+    if res_json['code'] == 'INVALID_VERSE'
       return res_json['msg']
     end
 
