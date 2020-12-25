@@ -19,6 +19,9 @@ class RhymeGenerator5
 
     res = http.request(req)
     res_json = JSON.parse(res.body.force_encoding('utf-8'))
+    if res_json['code'] == 'INVALID_VERSE' do
+      return res_json['msg']
+    end
 
     rd = res_json['receive_distance'].to_i
     gd = res_json['gen_distance'].to_i
